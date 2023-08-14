@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { BlogDto } from './dto/blog.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Blog, BlogDocument } from './blog.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class BlogService {
   blogs: BlogDto[];
 
-  constructor() {
+  constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {
     this.blogs = [
       {
         id: 1,
@@ -28,7 +31,7 @@ export class BlogService {
     ];
   }
   async getAllBlogs() {
-    return this.blogs;
+    return this.blogModel.find({});
   }
 
   async create(dto: BlogDto) {
