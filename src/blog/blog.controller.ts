@@ -1,47 +1,48 @@
+import { dot } from 'node:test/reporters';
+import { BlogService } from './blog.service';
 import { BlogDto } from './dto/blog.dto';
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 
 @Controller('blog')
 export class BlogController {
-  blogs: BlogDto[];
-
-  constructor() {
-    this.blogs = [
-      {
-        id: 1,
-        title: 'NestJS',
-        excerpt: 'NestJS Full Courses',
-        description: 'NestJS Full course from 0 to hero',
-      },
-      {
-        id: 2,
-        title: 'NextJS',
-        excerpt: 'NextJS Full Courses',
-        description: 'NextJS Full course from 0 to hero',
-      },
-      {
-        id: 3,
-        title: 'NuxtJS',
-        excerpt: 'NuxtJS Full Courses',
-        description: 'NuxtJS Full course from 0 to hero',
-      },
-    ];
-  }
+  constructor(private readonly blogServeice: BlogService) {}
 
   @HttpCode(200)
   @Get()
   async getAll() {
-    return this.blogs;
+    return this.blogServeice.getAllBlogs();
   }
 
   @HttpCode(201)
   @Post()
   async create(@Body() dto: BlogDto) {
-    const data: BlogDto = {
-      id: new Date().getTime(),
-      ...dto,
-    };
+    return this.blogServeice.create(dto);
+  }
 
-    return [...this.blogs, data];
+  @HttpCode(200)
+  @Get(':id')
+  async getById(@Param('id') id: string) {
+    return this.blogServeice.getById(id);
+  }
+
+  @HttpCode(200)
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() dto: BlogDto) {
+    return this.blogServeice.update(id, dto);
+  }
+
+  @HttpCode(200)
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    return this.blogServeice.delete(id);
   }
 }
